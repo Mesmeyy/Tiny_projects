@@ -8,4 +8,9 @@
 #include<iostream>
 #include"process.h"
 using namespace std;
+int main(int argc,char* argv[])
+{
+    return process.start(argc,argv);
+    
+}
 

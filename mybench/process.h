@@ -17,7 +17,6 @@
 #include<string>
 #include<time.h>
 #include<signal.h>
-#include<thread>
 #define METHOD_GET 0 //get请求的宏
 #define METHOD_HEAD 1 //head请求的宏
 #define PROGRAM_VERSION "zzy---1.5" //版本类型
@@ -69,6 +68,7 @@ public:
     PROCESS();//构造函数
     int start(int argc,char*argv[]);//启动压力测试
 };
+PROCESS process;
 static const struct option long_options[] = {
     {"force",no_argument,&process.force,1},
     {"reload",no_argument,&process.force_reload,1},
@@ -86,7 +86,7 @@ static const struct option long_options[] = {
 };
 static void signalhandle(int signal)
 {
-    timerecpired = 1;
+    process.timerecpired = 1;
 }
 PROCESS::PROCESS()
 {
@@ -116,5 +116,4 @@ public:
    
 };
 int mysocket(string ip,int port);
-PROCESS process;
 #endif

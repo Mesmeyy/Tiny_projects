@@ -16,20 +16,20 @@
 #include<string>
 #include<time.h>
 #include<signal.h>
-#include<thread>
 #include"process.h"
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<exception>
 #include<fcntl.h>
-
+#include<sys/socket.h>
+#include<netinet/in.h>
+#include<arpa/inet.h>
 using namespace std;
 using std::string;
-using std::thread;
 pthread_mutex_t mutex2;//用于clients变化时候的保护
 pthread_mutex_t mutex3;//failed
 pthread_mutex_t mutex4;//speed
-void sondo(PROCESS &process);//子线程函数
+void sondo(void* p);//子线程函数
 
 LOCK::LOCK(PROCESS& process,TTTHREAD& th)
 {
@@ -224,9 +224,12 @@ bool PROCESS::bench(void)
 	    return 3;
     }
     int i = 0;
+    PROCESS *tempprocess;
+    tempprocess = &process;
     for(i=0;i<clients;i++)
     {
-        thread thus = std::thread(&sondo,process);
+        pthread_t thid;
+        pthread_create(&thid,NULL,sondo,NULL);
     }
 	allspeed=0;
     allfailed=0;
@@ -265,8 +268,9 @@ allcheck:
 
 
 //子线程的执行函数
-void sondo(PROCESS& process)
+void sondo(void* p)
 {
+    //PROCESS process = *(PROCESS*)p;
     FILE *fp;
     int speed = 0;
     int fail = 0;
@@ -367,6 +371,19 @@ nexttry:
        
         t.speed++;
     }
+}
+int mysocket(string host,int port)
+{
+    int connfd;
+    struct sockaddr_in ser_addr;
+    bzero(&ser_addr,sizeof(struct sockaddr_in));
+    ser_addr.sin_family = AF_INET;
+    ser_addr.sin_port = htons(port);
+    inet_aton(host.c_str(),&ser_addr.sin_addr);
+
+    if((connfd = socket(AF_INET,SOCK_STREAM,0)) <= 0) return -1;
+    if(connect(connfd,(struct sockaddr*)&ser_addr,sizeof(struct sockaddr)) < 0) return -2;
+    return connfd;
 }
 
 
