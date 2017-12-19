@@ -82,5 +82,4 @@ public:
    
 };
 int mysocket(string ip,int port);
-PROCESS process;
 #endif

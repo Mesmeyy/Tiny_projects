@@ -16,7 +16,6 @@
 #include<string>
 #include<time.h>
 #include<signal.h>
-#include"process.h"
 #include<sys/types.h>
 #include<sys/stat.h>
 #include<exception>
@@ -24,13 +23,14 @@
 #include<sys/socket.h>
 #include<netinet/in.h>
 #include<arpa/inet.h>
+#include"process.h"
 using namespace std;
 using std::string;
 pthread_mutex_t mutex2;//用于clients变化时候的保护
 pthread_mutex_t mutex3;//failed
 pthread_mutex_t mutex4;//speed
 void* sondo(void* p);//子线程函数
-
+PROCESS process;
 
 static const struct option long_options[] = {
     {"force",no_argument,&process.force,1},
@@ -348,7 +348,6 @@ nexttry:
         {
            if(allfailed>0)
             {
-                /*fprintf(stderr,"Correcting failed by signal\n"); */
                 pthread_mutex_lock(&mutex3);
                 allfailed--;
                 pthread_mutex_unlock(&mutex3);
@@ -382,12 +381,10 @@ nexttry:
        
         if(force==0) 
         {
-            /*read all available data from socket */
 	        while(1)
 	        {
                 if(timerecpired) break; 
 	            i=read(fd,buf,1500);
-                /*fprintf(stderr,"%d\n",i); */
 	            if(i<0) 
                 { 
                     pthread_mutex_lock(&mutex3);
@@ -408,6 +405,8 @@ nexttry:
         t.speed++;
     }
 }
+
+
 int mysocket(string host,int port)
 {
     int connfd;
@@ -421,6 +420,7 @@ int mysocket(string host,int port)
     if(connect(connfd,(struct sockaddr*)&ser_addr,sizeof(struct sockaddr)) < 0) return -2;
     return connfd;
 }
+
 
 void PROCESS::usage(void)
 {
@@ -442,3 +442,4 @@ void PROCESS::usage(void)
 	"  -V|--version             Display program version.\n"
 	);
 };
+
