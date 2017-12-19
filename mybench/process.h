@@ -68,42 +68,8 @@ public:
     PROCESS();//构造函数
     int start(int argc,char*argv[]);//启动压力测试
 };
-PROCESS process;
-static const struct option long_options[] = {
-    {"force",no_argument,&process.force,1},
-    {"reload",no_argument,&process.force_reload,1},
-    {"time",required_argument,NULL,'t'},
-    {"help",no_argument,NULL,'?'},
-    {"http09",no_argument,NULL,'9'},
-    {"http10",no_argument,NULL,'1'},
-    {"http11",no_argument,NULL,'2'},
-    {"get",no_argument,&process.method,METHOD_GET},
-    {"head",no_argument,&process.method,METHOD_HEAD},
-    {"version",no_argument,NULL,'V'},
-    {"proxy",required_argument,NULL,'p'},
-    {"clients",required_argument,NULL,'c'},
-    {NULL,0,NULL,0}
-};
-static void signalhandle(int signal)
-{
-    process.timerecpired = 1;
-}
-PROCESS::PROCESS()
-{
-    timerecpired = 0;
-    allspeed = 0;
-    allfailed = 0;
-    allbytes = 0;
-    method = METHOD_GET;
-    clients = 1;
-    force = 0;
-    force_reload = 0;
-    proxyhost = "";
-    proxyport = 0;
-    benchtime = 30;
-    host = "";
-    request = "";
-}
+
+
 class LOCK
 {
 private:
@@ -116,4 +82,5 @@ public:
    
 };
 int mysocket(string ip,int port);
+PROCESS process;
 #endif

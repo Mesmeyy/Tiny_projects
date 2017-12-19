@@ -29,7 +29,28 @@ using std::string;
 pthread_mutex_t mutex2;//用于clients变化时候的保护
 pthread_mutex_t mutex3;//failed
 pthread_mutex_t mutex4;//speed
-void sondo(void* p);//子线程函数
+void* sondo(void* p);//子线程函数
+
+
+static const struct option long_options[] = {
+    {"force",no_argument,&process.force,1},
+    {"reload",no_argument,&process.force_reload,1},
+    {"time",required_argument,NULL,'t'},
+    {"help",no_argument,NULL,'?'},
+    {"http09",no_argument,NULL,'9'},
+    {"http10",no_argument,NULL,'1'},
+    {"http11",no_argument,NULL,'2'},
+    {"get",no_argument,&process.method,METHOD_GET},
+    {"head",no_argument,&process.method,METHOD_HEAD},
+    {"version",no_argument,NULL,'V'},
+    {"proxy",required_argument,NULL,'p'},
+    {"clients",required_argument,NULL,'c'},
+    {NULL,0,NULL,0}
+};
+static void signalhandle(int signal)
+{
+    process.timerecpired = 1;
+}
 
 LOCK::LOCK(PROCESS& process,TTTHREAD& th)
 {
@@ -38,6 +59,22 @@ LOCK::LOCK(PROCESS& process,TTTHREAD& th)
     FILE *fp = fdopen(process.mypipe[1],"wa+");
     fprintf(fp,"%d %d %d\n",th.speed,th.fail,th.bytes);
     fclose(fp);
+}
+PROCESS::PROCESS()
+{
+    timerecpired = 0;
+    allspeed = 0;
+    allfailed = 0;
+    allbytes = 0;
+    method = METHOD_GET;
+    clients = 1;
+    force = 0;
+    force_reload = 0;
+    proxyhost = "";
+    proxyport = 0;
+    benchtime = 30;
+    host = "";
+    request = "";
 }
 int PROCESS::start(int argc,char** argv)
 {
@@ -119,7 +156,7 @@ int PROCESS::start(int argc,char** argv)
 
     printf(", running %d sec", benchtime);
     if(force) printf(", early socket close");
-    if(proxyhost !="") printf(", via proxy server %s:%d",proxyhost,proxyport);
+    if(proxyhost !="") printf(", via proxy server %s:%d",proxyhost.c_str(),proxyport);
     if(force_reload) printf(", forcing reload");
     printf(".\n");
     pthread_mutex_init(&mutex2, NULL);
@@ -268,7 +305,7 @@ allcheck:
 
 
 //子线程的执行函数
-void sondo(void* p)
+void* sondo(void* p)
 {
     //PROCESS process = *(PROCESS*)p;
     FILE *fp;
@@ -289,7 +326,6 @@ void sondo(void* p)
     pthread_mutex_lock(&mutex2);
     process.clients --;
     pthread_mutex_unlock(&mutex2);
-    return ;
 }
 
 void PROCESS::benchcore(TTTHREAD& t)
@@ -386,4 +422,23 @@ int mysocket(string host,int port)
     return connfd;
 }
 
-
+void PROCESS::usage(void)
+{
+   fprintf(stderr,
+	"webbench [option]... URL\n"
+	"  -f|--force               Don't wait for reply from server.\n"
+	"  -r|--reload              Send reload request - Pragma: no-cache.\n"
+	"  -t|--time <sec>          Run benchmark for <sec> seconds. Default 30.\n"
+	"  -p|--proxy <server:port> Use proxy server for request.\n"
+	"  -c|--clients <n>         Run <n> HTTP clients at once. Default one.\n"
+	"  -9|--http09              Use HTTP/0.9 style requests.\n"
+	"  -1|--http10              Use HTTP/1.0 protocol.\n"
+	"  -2|--http11              Use HTTP/1.1 protocol.\n"
+	"  --get                    Use GET request method.\n"
+	"  --head                   Use HEAD request method.\n"
+	"  --options                Use OPTIONS request method.\n"
+	"  --trace                  Use TRACE request method.\n"
+	"  -?|-h|--help             This information.\n"
+	"  -V|--version             Display program version.\n"
+	);
+};
