@@ -24,11 +24,14 @@
 #include<netinet/in.h>
 #include<arpa/inet.h>
 #include"process.h"
+#include<mutex>
+#include<algorithm>
 using namespace std;
 using std::string;
-pthread_mutex_t mutex2;//用于clients变化时候的保护
-pthread_mutex_t mutex3;//failed
-pthread_mutex_t mutex4;//speed
+using std::mutex;
+mutex mutex2;//用于clients变化时候的保护
+mutex mutex3;//failed.
+mutex mutex4;//speed
 void* sondo(void* p);//子线程函数
 PROCESS process;
 
@@ -54,8 +57,7 @@ static void signalhandle(int signal)
 
 LOCK::LOCK(PROCESS& process,TTTHREAD& th)
 {
-    pthread_mutex_init(&mutex,NULL);
-    pthread_mutex_lock(&mutex);
+    lock_guard<mutex> lo(m);
     FILE *fp = fdopen(process.mypipe[1],"wa+");
     fprintf(fp,"%d %d %d\n",th.speed,th.fail,th.bytes);
     fclose(fp);
@@ -159,9 +161,6 @@ int PROCESS::start(int argc,char** argv)
     if(proxyhost !="") printf(", via proxy server %s:%d",proxyhost.c_str(),proxyport);
     if(force_reload) printf(", forcing reload");
     printf(".\n");
-    pthread_mutex_init(&mutex2, NULL);
-    pthread_mutex_init(&mutex3,NULL);
-    pthread_mutex_init(&mutex4,NULL);
     return bench();
 }
 
@@ -249,6 +248,7 @@ bool PROCESS::bench(void)
     FILE *f;
     int fd; 
 
+    /*我觉得人家封的socket更好*/
     fd=mysocket(proxyhost==""?host:proxyhost,proxyport);
     if(fd<0) { 
 	    fprintf(stderr,"\nConnect to server failed. Aborting benchmark.\n");
@@ -323,9 +323,8 @@ void* sondo(void* p)
     }catch(exception& e){
         cout << e.what()<<endl;
     }
-    pthread_mutex_lock(&mutex2);
+    lock_guard<mutex> lo2(mutex2);  
     process.clients --;
-    pthread_mutex_unlock(&mutex2);
 }
 
 void PROCESS::benchcore(TTTHREAD& t)
@@ -348,9 +347,8 @@ nexttry:
         {
            if(allfailed>0)
             {
-                pthread_mutex_lock(&mutex3);
+                lock_guard<mutex> lo3(mutex3);
                 allfailed--;
-                pthread_mutex_unlock(&mutex3);
             }
             return;
         }
@@ -358,23 +356,20 @@ nexttry:
         
         //zzy:以下是各种发送出错情况
         if(fd<0) { 
-            pthread_mutex_lock(&mutex3);
+            lock_guard<mutex> lo3(mutex3);
             allfailed++;
-            pthread_mutex_unlock(&mutex3);
             continue;
         }
         if(rlen!=write(fd,request.c_str(),rlen)) {
-            pthread_mutex_lock(&mutex3);
+            lock_guard<mutex> lo3(mutex3);
             allfailed++;
-            pthread_mutex_unlock(&mutex3);
             close(fd);
             continue;
         }
         if(httpv==0) 
 	        if(shutdown(fd,1)) {
-                pthread_mutex_lock(&mutex3);
+                lock_guard<mutex> lo3(mutex3);
                 allfailed++;
-                pthread_mutex_unlock(&mutex3);
                 close(fd);
                 continue;
             }
@@ -387,9 +382,8 @@ nexttry:
 	            i=read(fd,buf,1500);
 	            if(i<0) 
                 { 
-                    pthread_mutex_lock(&mutex3);
+                    lock_guard<mutex> lo3(mutex3);
                     allfailed++;
-                    pthread_mutex_unlock(&mutex3);
                     close(fd);
                     //zzy:读失败了无所谓,进行下一次压力发送即可
                     goto nexttry;
@@ -401,7 +395,7 @@ nexttry:
 	        }
         }
         close(fd);
-       
+        lock_guard<mutex> lo4(mutex4);
         t.speed++;
     }
 }

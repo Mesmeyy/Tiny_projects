@@ -17,6 +17,8 @@
 #include<string>
 #include<time.h>
 #include<signal.h>
+#include<algorithm>
+#include<mutex>
 #define METHOD_GET 0 //get请求的宏
 #define METHOD_HEAD 1 //head请求的宏
 #define PROGRAM_VERSION "zzy---1.5" //版本类型
@@ -26,6 +28,8 @@
 
 using namespace std;
 using std::string;
+using std::mutex;
+
 class TTTHREAD
 {
     /*本线程运行内部的相关信息*/
@@ -70,15 +74,15 @@ public:
 };
 
 
+/**本来想自己封装mutex，
+* 但是看到了更好的轮子lock_guard*/
 class LOCK
 {
 private:
-    pthread_mutex_t mutex;
+    mutex m;
 public:
     LOCK(PROCESS& process,TTTHREAD& th);
-    ~LOCK(){
-    pthread_mutex_unlock(&mutex);
-    }
+    
    
 };
 int mysocket(string ip,int port);
