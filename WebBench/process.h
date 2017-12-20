@@ -25,7 +25,7 @@
 #define MAXHOSTSIZE 256 //host最长256
 #define MAXREQUESTSIZE 1024 //请求包最长1024
 #define MAXPORT 65535//max port
-
+#define MAXPTHREAD 100 //最多创建100线程
 using namespace std;
 using std::string;
 using std::mutex;
@@ -59,7 +59,6 @@ public:
     string proxyhost;//代理的host
     int proxyport;//代理的端口
     int benchtime;//倒计时
-    int  mypipe[2];//读写管道
     string host;//host最大
     string request;//request最大
 public:

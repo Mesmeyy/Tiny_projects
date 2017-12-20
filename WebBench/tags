@@ -1,0 +1,53 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+LOCK	process.cpp	/^LOCK::LOCK(PROCESS& process,TTTHREAD& th)$/;"	f	class:LOCK
+LOCK	process.h	/^class LOCK$/;"	c
+MAXHOSTSIZE	process.h	25;"	d
+MAXPORT	process.h	27;"	d
+MAXPTHREAD	process.h	28;"	d
+MAXREQUESTSIZE	process.h	26;"	d
+METHOD_GET	process.h	22;"	d
+METHOD_HEAD	process.h	23;"	d
+PROCESS	process.cpp	/^PROCESS::PROCESS()$/;"	f	class:PROCESS
+PROCESS	process.h	/^class PROCESS$/;"	c
+PROGRAM_VERSION	process.h	24;"	d
+TTTHREAD	process.h	/^    TTTHREAD(int &s,int& f,int &b){$/;"	f	class:TTTHREAD
+TTTHREAD	process.h	/^class TTTHREAD$/;"	c
+_PROCESS_H	process.h	9;"	d
+allbytes	process.h	/^    int allbytes;\/\/传输比特$/;"	m	class:PROCESS
+allfailed	process.h	/^    int allfailed;\/\/失败次数$/;"	m	class:PROCESS
+allspeed	process.h	/^    int allspeed;\/\/可支持的访问数量$/;"	m	class:PROCESS
+bench	process.cpp	/^bool PROCESS::bench(void)$/;"	f	class:PROCESS
+benchcore	process.cpp	/^void PROCESS::benchcore(TTTHREAD& t)$/;"	f	class:PROCESS
+benchtime	process.h	/^    int benchtime;\/\/倒计时$/;"	m	class:PROCESS
+build_request	process.cpp	/^void PROCESS::build_request(char *url)$/;"	f	class:PROCESS
+bytes	process.h	/^    int bytes;$/;"	m	class:TTTHREAD
+clients	process.h	/^    int clients ;\/\/线程个数$/;"	m	class:PROCESS
+fail	process.h	/^    int fail;$/;"	m	class:TTTHREAD
+force	process.h	/^    int force;\/\/是否强制返回$/;"	m	class:PROCESS
+force_reload	process.h	/^    int force_reload;\/\/强制返回消息$/;"	m	class:PROCESS
+host	process.h	/^    string host;\/\/host最大$/;"	m	class:PROCESS
+httpv	process.h	/^    int httpv;\/\/http版本$/;"	m	class:PROCESS
+long_options	process.cpp	/^static const struct option long_options[] = {$/;"	v	typeref:struct:option	file:
+m	process.h	/^    mutex m;$/;"	m	class:LOCK
+main	main.cpp	/^int main(int argc,char* argv[])$/;"	f
+method	process.h	/^    int method ;\/\/请求方法$/;"	m	class:PROCESS
+mutex3	process.cpp	/^mutex mutex3;\/\/failed.$/;"	v
+mutex4	process.cpp	/^mutex mutex4;\/\/speed$/;"	v
+mypipe	process.h	/^    int  mypipe[2];\/\/读写管道$/;"	m	class:PROCESS
+mysocket	process.cpp	/^int mysocket(string host,int port)$/;"	f
+process	process.cpp	/^PROCESS process;$/;"	v
+proxyhost	process.h	/^    string proxyhost;\/\/代理的host$/;"	m	class:PROCESS
+proxyport	process.h	/^    int proxyport;\/\/代理的端口$/;"	m	class:PROCESS
+request	process.h	/^    string request;\/\/request最大$/;"	m	class:PROCESS
+signalhandle	process.cpp	/^static void signalhandle(int signal)$/;"	f	file:
+sondo	process.cpp	/^void* sondo(void *p)$/;"	f
+speed	process.h	/^    int speed;$/;"	m	class:TTTHREAD
+start	process.cpp	/^int PROCESS::start(int argc,char** argv)$/;"	f	class:PROCESS
+timerecpired	process.h	/^    volatile int timerecpired;$/;"	m	class:PROCESS
+tv	process.cpp	/^vector<pthread_t> tv;$/;"	v
+usage	process.cpp	/^void PROCESS::usage(void)$/;"	f	class:PROCESS
